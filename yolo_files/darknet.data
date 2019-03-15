@@ -1,0 +1,5 @@
+classes = 1
+train  = /home/gboyer01/darknet/Tiny_GPU/syringe_train.txt
+valid  = /home/gboyer01/darknet/Tiny_GPU/syringe_test.txt
+names = /home/gboyer01/darknet/Tiny_GPU/classes.names
+backup = /home/gboyer01/darknet/Tiny_GPU/
