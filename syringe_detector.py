@@ -37,7 +37,8 @@ class openCV:
             # Give the configuration and weight files for the model and load the network using them.
 
         self.modelConfiguration = "yolo_files/syringe-yolov3-tiny.cfg";
-        self.modelWeights = "yolo_files/syringe-yolov3-tiny_13000.weights";
+        # self.modelWeights = "yolo_files/syringe-yolov3-tiny_13000.weights";
+        self.modelWeights = "/home/murderous/robot_project/weights/syringe-yolov3-tiny_20000.weights";
 
         self.net = cv.dnn.readNetFromDarknet(self.modelConfiguration, self.modelWeights)
         self.net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
@@ -190,22 +191,22 @@ class openCV:
             cv.imshow(winName, frame)
             self.print_bool()
 
-            robot = robotfloor(40, 1.0, 62.2 , 48.8, 3280, 1464)
+            robot = robotfloor(42, 0.58, 70.42, 43.3, 640, 480)
             robot.set_pixels(self.x_pixel, self.y_pixel)
             robot.solve()
-
+            
             #data = "fdasfdsafadsfsd"
-            data = str(self.syringe) + ", " + str(robot.get_x_world()) + ", " + str(robot.get_y_world()) + ", " +  str(robot.get_z_world())
+            data = ":" + str(int(self.syringe)) + ", " + str(robot.get_x_world())[0:9] + ", " + str(robot.get_y_world())[0:9] + ", " +  str(robot.get_z_world())[0:9] 
             # Create a socket (SOCK_STREAM means a TCP socket)
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                 # Connect to server and send data
-                sock.connect(("10.16.0.230", 6969))
+                sock.connect(("10.0.0.1", 6969))
                 sock.sendall(bytes(data + "\n", "utf-8"))
                 #Receive data from the server and shut down
                 sock.recv(1024)
                 # client = robot_client(self.ip_address, self.port2)
                 # client.data_to_send(self.syringe, robot.get_x_world(), robot.get_y_world(), robot.get_z_world())
-
+            
             if cv.waitKey(1) == 27: 
                 break  # esc to quit
 
@@ -284,15 +285,11 @@ class robotfloor:
         return f'{str(self.x_world)} {str(self.y_world)} {str(self.z_world)}'
 
 
-
     def solve_z_world(self):
 
-        #self.z_world = self.main_num / ((self.h_res_y__x__tanBeta - self.h_res_y__x__tanHalf_of_Alpha) + \
-        #               (self.tanHalf_of_Alpha * self.pixel_y) )
-
         self.z_world = self.main_num / (self.main_dem + (self.tanHalf_of_Alpha * self.pixel_y))
-
-
+        self.z_world = (self.z_world  * 1.66) - 0.6 
+        
     def solve_y_world(self):
         self.y_world = - self.height * (self.zm - self.z_world) / self.zm
 
@@ -312,6 +309,6 @@ class robotfloor:
 
 
 
-video_feed = 'http://10.16.0.230:8090/test.mjpg'
+video_feed = 'http://10.0.0.1:8090/test.mjpg'
 test = openCV(video_feed)
 test.run()
